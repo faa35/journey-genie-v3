@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Weather Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icons/favicon.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Material Design Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Include the Showdown CDN to convert Markdown text to HTML before displaying it -->
+    <script src="https://cdn.jsdelivr.net/npm/showdown@2.0.3/dist/showdown.min.js"></script>
+    <style>
+        /* Import Google font - Poppins */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /* font-family: 'Poppins', sans-serif; */
+        }
+
+        #chatContainer {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 300px;
+            height: 400px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            resize: both;
+            min-width: 40%;
+            /* Minimum width to prevent it from becoming too small */
+            min-height: 45%;
+            /* Minimum height to prevent it from becoming too small */
+            max-width: 60%;
+            /* Optional: Limit the maximum width to 90% of the screen */
+            max-height: 70%;
+            /* Optional: Limit the maximum height to 90% of the screen */
+        }
+
+        .user {
+            display: flex;
+            align-items: center;
+            max-width: 80%;
+        }
+
+        .bot {
+            display: flex;
+            align-items: center;
+            max-width: 100%;
+        }
+
+        .chat {
+            margin-bottom: 10px;
+        }
+
+        .user {
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+
+        .bot {
+            justify-content: flex-start;
+            margin-right: auto;
+        }
+
+        .chat-bubble {
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .user .chat-bubble {
+            background-color: #e0f7fa;
+            color: #00796b;
+        }
+
+        .bot .chat-bubble {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #ddd;
+        }
+
+        #userInput {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        #sendButton {
+            padding: 10px 20px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #sendButton:hover {
+            background-color: #45a049;
+        }
+
+        #chatIcon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #chatIcon:hover {
+            background-color: #45a049;
+        }
+
+        /* .card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            text-align: center;
+        }
+
+        .card-body a {
+            text-decoration: none;
+            color: inherit;
+        } */
+
+        #inputContainer {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        #userInput {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            margin-right: -1px;
+            /* Remove double border between input and button */
+        }
+
+        #sendButton {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            border-left: none;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            border-radius: 0 5px 5px 0;
+        }
+
+        #sendButton:hover {
+            background-color: #45a049;
+        }
+
+
+        /* @media (max-width: 768px) {
+            .card {
+                margin-bottom: 20px;
+            }
+        }
+
+        .material-icons {
+            font-size: 24px;
+            vertical-align: middle;
+            margin-right: 5px;
+        } */
+        body {
+            /* background: #E3F2FD; */
+            /* height: 100vh; */
+            /* display: flex; */
+            /* justify-content: center; */
+            align-items: center;
+            position: relative;
+            /* overflow: hidden; */
+            flex-direction: column;
+        }
+
+        .background {
+            position: absolute;
+            top: 200px;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            filter: blur(3px);
+            /* border-radius: 80px; */
+
+
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .container {
+            display: flex;
+            gap: 35px;
+            padding: 30px;
+            z-index: 1;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .weather-input {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .weather-input input {
+            height: 50px;
+            width: 100%;
+            outline: none;
+            font-size: 1.2rem;
+            padding: 0 20px;
+            margin: 10px 0 20px 0;
+            border-radius: 25px;
+            border: 1px solid #5372F0;
+        }
+
+        .weather-input input:focus {
+            border: 2px solid #2c52ed;
+        }
+
+        .weather-input .separator {
+            height: 1px;
+            width: 100%;
+            margin: 25px 0;
+            background: #BBBBBB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .weather-input .separator::before {
+            content: "or";
+            color: #6C757D;
+            font-size: 1.2rem;
+            padding: 0 15px;
+            margin-top: -4px;
+            background: #E3F2FD;
+        }
+
+        .weather-input button {
+            width: 100%;
+            padding: 12px 0;
+            cursor: pointer;
+            outline: none;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            color: #fff;
+            background: #5372F0;
+            transition: 0.2s ease;
+        }
+
+        .weather-input .search-btn:hover {
+            background: #2c52ed;
+        }
+
+        .weather-input .location-btn {
+            background: #2c52ed;
+        }
+
+        .weather-input .location-btn:hover {
+            background: #1b3cb8;
+        }
+
+        .weather-data {
+            width: 100%;
+            display: none;
+            /* Hide by default */
+            max-width: 1200px;
+        }
+
+        .weather-data .current-weather {
+            color: #fff;
+            background: rgba(227, 232, 255, 0.6);
+            border-radius: 20px;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(15px);
+        }
+
+        .current-weather h2 {
+            font-weight: 700;
+            font-size: 2.2rem;
+        }
+
+        .weather-data h6 {
+            margin-top: 12px;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .current-weather .icon {
+            text-align: center;
+        }
+
+        .current-weather .icon img {
+            max-width: 150px;
+            margin-top: -15px;
+        }
+
+        .current-weather .icon h6 {
+            margin-top: -10px;
+            text-transform: capitalize;
+        }
+
+        .days-forecast h2 {
+            margin: 20px 0;
+            font-size: 2rem;
+            color: #fff;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .days-forecast .weather-cards {
+            display: flex;
+            gap: 25px;
+        }
+
+        .weather-cards .card {
+            color: #fff;
+            padding: 25px 20px;
+            list-style: none;
+            width: calc(100% / 3 - 20px);
+            background: rgba(176, 190, 248, 0.6);
+            border-radius: 20px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .weather-cards .card:hover {
+            transform: scale(1.05);
+        }
+
+        .weather-cards .card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .weather-cards .card img {
+            max-width: 70px;
+            margin-bottom: 15px;
+        }
+
+        .weather-cards .card h6 {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1200px) {
+            .weather-cards .card {
+                width: calc(100% / 2 - 20px);
+            }
+        }
+
+        @media (max-width: 950px) {
+            .weather-input {
+                width: 90%;
+            }
+
+            .weather-cards .card {
+                width: calc(100% / 2 - 15px);
+            }
+        }
+
+        @media (max-width: 750px) {
+            h1 {
+                font-size: 1.8rem;
+                padding: 16px 0;
+            }
+
+            .container {
+                flex-wrap: wrap;
+                padding: 15px;
+            }
+
+            .weather-input {
+                width: 100%;
+            }
+
+            .weather-data h2 {
+                font-size: 1.5rem;
+            }
+
+            .weather-cards .card {
+                width: 100%;
+            }
+        }
+
+        .card img {
+            /* height: 200px; */
+            object-fit: cover;
+        }
+
+        .card-body {
+            text-align: center;
+        }
+
+        .card-body a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                margin-bottom: 20px;
+            }
+        }
+
+        .material-icons {
+            font-size: 24px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            /* Ensure items are in a row */
+            flex-wrap: nowrap;
+        }
+
+        .navbar-nav .nav-link {
+            position: relative;
+            padding-bottom: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .navbar-nav .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 3px;
+            background-color: #000;
+            /* Underline color */
+            transition: width 0.3s;
+        }
+
+        .navbar-nav .nav-link:hover::after {
+            width: 100%;
+            /* Full width underline on hover */
+        }
+
+        .navbar-nav .nav-link.active::after {
+            width: 100%;
+            height: 6px;
+            /* Bolder underline for the active page */
+        }
+
+        /* Hide text on small screens */
+        @media (max-width: 576px) {
+            .navbar-nav .nav-link span.fs-4 {
+                display: none;
+            }
+
+            .navbar-nav .nav-link {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+        }
+
+        /* Styling for the main navbar */
+        .navbar-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: transparent;
+            /* Make the navbar background transparent */
+        }
+
+        .navbar-main .brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-main .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .navbar-main .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* General styles for both navbars on larger screens */
+        @media (min-width: 992px) {
+
+            /* Main Navbar Styling for Larger Screens */
+            .navbar-main {
+                padding: 25px 60px;
+            }
+
+            .navbar-main .brand {
+                font-size: 32px;
+                /* Larger font size for the brand name */
+            }
+
+            .navbar-main .logout-btn {
+                font-size: 20px;
+                /* Larger font size for the log out button */
+                padding: 12px 30px;
+                /* Larger padding for the log out button */
+            }
+
+            /* Secondary Navbar Styling for Larger Screens */
+            .navbar.navbar-light.bg-light {
+                padding: 20px 0;
+                /* Increase padding for the secondary navbar */
+            }
+
+            .navbar-nav .nav-link {
+                font-size: 1.25rem;
+                /* fs-4 for larger screens */
+                padding-bottom: 14px;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .navbar-nav .nav-link::after {
+                height: 5px;
+                /* Increase the underline height on hover and active state */
+            }
+
+            .navbar-nav .nav-link .material-icons {
+                font-size: 34px;
+                /* Larger icon size for larger screens */
+            }
+        }
+
+        /* Set all icon text to fs-4 by default */
+        .navbar-nav .nav-link .fs-4 {
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .weather-cards {
+                display: flex;
+                overflow-x: auto;
+                gap: 15px;
+                /* Space between the cards */
+                padding-bottom: 15px;
+                /* Add padding to avoid cutting off shadows */
+                scroll-snap-type: x mandatory;
+                /* Enable snap scrolling */
+            }
+
+            .weather-cards .card {
+                min-width: calc(80% - 10px);
+                /* Width for the cards in the slider */
+                flex-shrink: 0;
+                /* Prevent cards from shrinking */
+                scroll-snap-align: start;
+                /* Ensure each card snaps to the start */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .weather-cards .card {
+                min-width: calc(90% - 10px);
+                /* Slightly smaller width for smaller screens */
+            }
+        }
+    </style>
+    <script th:inline="javascript">
+        var WEATHER_API_KEY = /*[[${weatherApiKey}]]*/ 'DEFAULT_KEY';
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cityInput = document.querySelector(".city-input");
+            const searchButton = document.querySelector(".search-btn");
+            const locationButton = document.querySelector(".location-btn");
+            const currentWeatherDiv = document.querySelector(".current-weather");
+            const weatherCardsDiv = document.querySelector(".weather-cards");
+            const backgroundDiv = document.querySelector('.background');
+
+            // Default background image when the page loads
+            backgroundDiv.style.backgroundImage = 'url("https://navigator.innovation.ca/sites/default/files/2022-08/JB0_3071-5.jpg")';
+
+            const fetchWeather = (lat, lng) => {
+                const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&appid=${WEATHER_API_KEY}`;
+                fetch(weatherUrl)
+                    .then(response => response.json())
+                    .then(data => displayWeatherData(data));
+            };
+
+            const displayWeatherData = (data) => {
+                const weatherDataDiv = document.querySelector('.weather-data');
+                const currentWeatherDiv = document.querySelector('.current-weather');
+                const weatherCardsDiv = document.querySelector('.weather-cards');
+
+                // Show the weather-data section
+                weatherDataDiv.style.display = 'block';
+
+                // Clear previous data
+                currentWeatherDiv.innerHTML = "";
+                weatherCardsDiv.innerHTML = "";
+
+                // Get city name
+                const cityName = data.city.name;
+
+                // Get weather data for the current time
+                const currentWeather = data.list[0];
+
+                const formattedDate = formatDate(currentWeather.dt_txt);
+                currentWeatherDiv.innerHTML = `
+            <div class="details">
+                <h2>${cityName} ${formattedDate}</h2>
+                <h6>Temperature: ${(currentWeather.main.temp - 273.15).toFixed(2)}°C</h6>
+                <h6>Wind: ${currentWeather.wind.speed} M/S</h6>
+                <h6>Humidity: ${currentWeather.main.humidity}%</h6>
+            </div>
+            <div class="icon">
+                <img src="https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@4x.png" alt="weather-icon">
+                <h6>${currentWeather.weather[0].description}</h6>
+            </div>
+        `;
+
+                // Update the background image based on the weather main
+                setDynamicBackground(currentWeather.weather[0].main);
+
+                // Filter the forecasts to get one forecast per day
+                const uniqueForecastDays = [];
+                const fiveDaysForecast = data.list.filter(forecast => {
+                    const forecastDate = new Date(forecast.dt_txt).getDate();
+                    if (!uniqueForecastDays.includes(forecastDate)) {
+                        return uniqueForecastDays.push(forecastDate);
+                    }
+                });
+
+                fiveDaysForecast.forEach(weatherItem => {
+                    const formattedDate = formatDate(weatherItem.dt_txt);
+                    const cardHTML = `
+                <li class="card">
+                    <h3>${formattedDate}</h3>
+                    <img src="https://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@4x.png" alt="weather-icon">
+                    <h6>Temp: ${(weatherItem.main.temp - 273.15).toFixed(2)}°C</h6>
+                    <h6>Wind: ${weatherItem.wind.speed} M/S</h6>
+                    <h6>Humidity: ${weatherItem.main.humidity}%</h6>
+                </li>
+            `;
+                    weatherCardsDiv.insertAdjacentHTML("beforeend", cardHTML);
+                });
+            };
+
+            const formatDate = (dateString) => {
+                const date = new Date(dateString);
+                const options = { weekday: 'long', month: 'long', day: '2-digit' };
+                return date.toLocaleDateString(undefined, options);
+            };
+
+            const setDynamicBackground = (weatherMain) => {
+                let imageUrl = '';
+                switch (weatherMain.toLowerCase()) {
+                    case 'clear':
+                        imageUrl = 'url("https://media.istockphoto.com/id/1346840420/photo/summer-blue-sky-cloud-gradient-fade-white-background-beauty-clear-cloudy-in-sunshine-calm.webp?b=1&s=170667a&w=0&k=20&c=UDXTxulpuOtaZwztHHdUU1ErYBKQyT6_CEUe8mn7OWk=")';
+                        break;
+                    case 'clouds':
+                        imageUrl = 'url("https://images.pexels.com/photos/531767/pexels-photo-531767.jpeg")';
+                        break;
+                    case 'rain':
+                        imageUrl = 'url("https://t4.ftcdn.net/jpg/06/94/57/35/360_F_694573577_qybFCxEBtY0MutRYJqI88NTpAFpDgtaw.jpg")';
+                        break;
+                    case 'thunderstorm':
+                        imageUrl = 'url("https://www.wkbn.com/wp-content/uploads/sites/48/2021/07/lightning-thunder-thunderstorm-rain-severe-weather-spring-summer-fall-weather-generic-6.jpg?w=1280")';
+                        break;
+                    case 'snow':
+                        imageUrl = 'url("https://i.redd.it/oc7hk36kw3uz.jpg")';
+                        break;
+                    case 'mist':
+                    case 'fog':
+                        imageUrl = 'url("https://images.pexels.com/photos/167699/pexels-photo-167699.jpeg?cs=srgb&dl=pexels-lum3n-44775-167699.jpg&fm=jpg")';
+                        break;
+                    case 'drizzle':
+                        imageUrl = 'url("https://img.freepik.com/premium-photo/rain-drops-window-with-cloud-sky-background-after-rain_719722-555.jpg?w=360")';
+                        break;
+                    default:
+                        imageUrl = 'url("https://navigator.innovation.ca/sites/default/files/2022-08/JB0_3071-5.jpg")';
+                }
+                backgroundDiv.style.backgroundImage = imageUrl;
+            };
+
+            const createWeatherCard = (cityName, weatherItem, index) => {
+                const formattedDate = formatDate(weatherItem.dt_txt);
+                if (index === 0) { // HTML for the main weather card
+                    setDynamicBackground(weatherItem.weather[0].main);
+                    return `<div class="details">
+                        <h2>${cityName} ${formattedDate}</h2>
+                        <h6>Temperature: ${(weatherItem.main.temp - 273.15).toFixed(2)}°C</h6>
+                        <h6>Wind: ${weatherItem.wind.speed} M/S</h6>
+                        <h6>Humidity: ${weatherItem.main.humidity}%</h6>
+                    </div>
+                    <div class="icon">
+                        <img src="https://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@4x.png" alt="weather-icon">
+                        <h6>${weatherItem.weather[0].description}</h6>
+                    </div>`;
+                } else { // HTML for the other five day forecast card
+                    return `<li class="card">
+                        <h3>${formattedDate}</h3>
+                        <img src="https://openweathermap.org/img/wn/${weatherItem.weather[0].icon}@4x.png" alt="weather-icon">
+                        <h6>Temp: ${(weatherItem.main.temp - 273.15).toFixed(2)}°C</h6>
+                        <h6>Wind: ${weatherItem.wind.speed} M/S</h6>
+                        <h6>Humidity: ${weatherItem.main.humidity}%</h6>
+                    </li>`;
+                }
+            };
+
+            const getWeatherDetails = (cityName, latitude, longitude) => {
+                const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${WEATHER_API_KEY}`;
+
+                fetch(WEATHER_API_URL).then(response => response.json()).then(data => {
+                    // Show the weather-data section
+                    document.querySelector('.weather-data').style.display = 'block';
+
+                    // Filter the forecasts to get only one forecast per day
+                    const uniqueForecastDays = [];
+                    const fiveDaysForecast = data.list.filter(forecast => {
+                        const forecastDate = new Date(forecast.dt_txt).getDate();
+                        if (!uniqueForecastDays.includes(forecastDate)) {
+                            return uniqueForecastDays.push(forecastDate);
+                        }
+                    });
+
+                    // Clearing previous weather data
+                    cityInput.value = "";
+                    currentWeatherDiv.innerHTML = "";
+                    weatherCardsDiv.innerHTML = "";
+
+                    // Creating weather cards and adding them to the DOM
+                    fiveDaysForecast.forEach((weatherItem, index) => {
+                        const html = createWeatherCard(cityName, weatherItem, index);
+                        if (index === 0) {
+                            currentWeatherDiv.insertAdjacentHTML("beforeend", html);
+                        } else {
+                            weatherCardsDiv.insertAdjacentHTML("beforeend", html);
+                        }
+                    });
+                }).catch(() => {
+                    alert("An error occurred while fetching the weather forecast!");
+                });
+            };
+
+            const getCityCoordinates = () => {
+                const cityName = cityInput.value.trim();
+                if (cityName === "") return;
+                const API_URL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${WEATHER_API_KEY}`;
+
+                // Get entered city coordinates (latitude, longitude, and name) from the API response
+                fetch(API_URL).then(response => response.json()).then(data => {
+                    if (!data.length) return alert(`No coordinates found for ${cityName}`);
+                    const { lat, lon, name } = data[0];
+                    getWeatherDetails(name, lat, lon);
+                }).catch(() => {
+                    alert("An error occurred while fetching the coordinates!");
+                });
+            };
+
+            const getUserCoordinates = () => {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        const { latitude, longitude } = position.coords; // Get coordinates of user location
+                        // Get city name from coordinates using reverse geocoding API
+                        const API_URL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${WEATHER_API_KEY}`;
+                        fetch(API_URL).then(response => response.json()).then(data => {
+                            const { name } = data[0];
+                            getWeatherDetails(name, latitude, longitude);
+                        }).catch(() => {
+                            alert("An error occurred while fetching the city name!");
+                        });
+                    },
+                    error => { // Show alert if user denied the location permission
+                        if (error.code === error.PERMISSION_DENIED) {
+                            alert("Geolocation request denied. Please reset location permission to grant access again.");
+                        } else {
+                            alert("Geolocation request error. Please reset location permission.");
+                        }
+                    });
+            };
+
+            locationButton.addEventListener("click", getUserCoordinates);
+            searchButton.addEventListener("click", getCityCoordinates);
+            cityInput.addEventListener("keyup", e => e.key === "Enter" && getCityCoordinates());
+        });
+
+    </script>
+</head>
+
+<body>
+    <div class="background"></div>
+    <!-- Main Navbar -->
+    <header>
+        <nav class="navbar-main">
+            <span class="brand">JourneyGenie</span>
+            <form action="/logout" method="POST">
+                <input type="submit" value="Log out" class="logout-btn">
+            </form>
+        </nav>
+    </header>
+
+    <!-- Secondary Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid justify-content-center">
+            <ul class="navbar-nav">
+                <!-- Home -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/home">
+                        <span class="material-icons">home</span>
+                        <span class="fs-4">Home</span>
+                    </a>
+                </li>
+                <!-- Routes -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/map">
+                        <span class="material-icons">directions</span>
+                        <span class="fs-4">Routes</span>
+                    </a>
+                </li>
+                <!-- Preferences -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/preferences">
+                        <span class="material-icons">settings</span>
+                        <span class="fs-4">Preferences</span>
+                    </a>
+                </li>
+                <!-- Saved Routes -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/saved-routes">
+                        <span class="material-icons">bookmark</span>
+                        <span class="fs-4">Saved Routes</span>
+                    </a>
+                </li>
+                <!-- Weather -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark active" href="/weather">
+                        <span class="material-icons">wb_sunny</span>
+                        <span class="fs-4">Weather</span>
+                    </a>
+                </li>
+                <!-- Track Budget -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/track-budget">
+                        <span class="material-icons">account_balance_wallet</span>
+                        <span class="fs-4">Track Budget</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="pt-5">Weather Dashboard</h1>
+        <div class="weather-input">
+            <input id="city-input" name="city" class="city-input" type="text"
+                placeholder="Enter a city name (e.g., New York, London, Tokyo)">
+            <button class="search-btn btn btn-info text-white">Search</button>
+            <div class="separator"></div>
+            <button class="location-btn btn btn-secondary text-white">Use Current Location</button>
+        </div>
+        <div class="weather-data">
+            <div class="current-weather">
+                <div class="details">
+                    <h2>_______ ______ </h2>
+                    <h6>Temperature: __°C</h6>
+                    <h6>Wind: __ M/S</h6>
+                    <h6>Humidity: __%</h6>
+                </div>
+                <div class="icon">
+                    <img src="https://openweathermap.org/img/wn/10d@4x.png" alt="weather-icon">
+                    <h6>description</h6>
+                </div>
+            </div>
+            <div class="days-forecast">
+                <h2>5-Day Forecast</h2>
+                <ul class="weather-cards">
+                    <li class="card">
+                        <h3> ______ </h3>
+                        <img src="https://openweathermap.org/img/wn/10d@4x.png" alt="weather-icon">
+                        <h6>Temp: __C</h6>
+                        <h6>Wind: __ M/S</h6>
+                        <h6>Humidity: __%</h6>
+                    </li>
+                    <li class="card">
+                        <h3> ______ </h3>
+                        <img src="https://openweathermap.org/img/wn/10d@4x.png" alt="weather-icon">
+                        <h6>Temp: __C</h6>
+                        <h6>Wind: __ M/S</h6>
+                        <h6>Humidity: __%</h6>
+                    </li>
+                    <li class="card">
+                        <h3> ______ </h3>
+                        <img src="https://openweathermap.org/img/wn/10d@4x.png" alt="weather-icon">
+                        <h6>Temp: __C</h6>
+                        <h6>Wind: __ M/S</h6>
+                        <h6>Humidity: __%</h6>
+                    </li>
+                    <li class="card">
+                        <h3> ______ </h3>
+                        <img src="https://openweathermap.org/img/wn/10d@4x.png" alt="weather-icon">
+                        <h6>Temp: __C</h6>
+                        <h6>Wind: __ M/S</h6>
+                        <h6>Humidity: __%</h6>
+                    </li>
+                    <li class="card">
+                        <h3> ______ </h3>
+                        <img src="https://openweathermap.org/img/wn/10d@4x.png" alt="weather-icon">
+                        <h6>Temp: __C</h6>
+                        <h6>Wind: __ M/S</h6>
+                        <h6>Humidity: __%</h6>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <div id="chatContainer">
+        <div id="chatContent"></div>
+        <!-- Predefined question -->
+        <div id="predefinedQuestionContainer" style="margin-top: 10px; margin-bottom: 10px;">
+            <button id="predefinedQuestion"
+                style="padding: 10px; border: none; background-color: #f0f0f0; color: #00796b; cursor: pointer; border-radius: 5px;">
+                Paris weather reccomendations
+            </button>
+        </div>
+        <div id="inputContainer">
+            <input type="text" id="userInput" placeholder="Enter your message">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+    <button id="chatIcon">💬</button>
+
+    <script type="importmap">
+        {
+          "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          }
+        }
+      </script>
+    <script type="module">
+        import { GoogleGenerativeAI } from "@google/generative-ai";
+
+        // Fetch your API_KEY
+
+        const API_KEY = "[[${GOOGLE_API_KEY}]]";
+        // Reminder: This should only be for local testing
+
+        // Access your API key (see "Set up your API key" above)
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        // The Gemini 1.5 models are versatile and work with most use cases
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        // Initialize Showdown converter with table support
+        const converter = new showdown.Converter({ tables: true });
+
+        async function generateContent(prompt) {
+            try {
+                const persona = "You are JJ, a friendly and knowledgeable travel genie who helps people with their travel plans.";
+                const result = await model.generateContent(`${persona}\n\n${prompt}`);
+                const response = await result.response;
+                const text = await response.text();
+                return text;
+            } catch (error) {
+                console.error('Error generating content:', error);
+                return 'Failed to generate content';
+            }
+        }
+
+        function appendChat(message, sender, isGenerating = false) {
+            const chatContent = document.getElementById('chatContent');
+            const chatMessage = document.createElement('div');
+            chatMessage.className = `chat ${sender}`;
+
+            // Create a chat bubble
+            const chatBubble = document.createElement('div');
+            chatBubble.className = 'chat-bubble';
+
+            // Convert Markdown to HTML
+            const htmlMessage = converter.makeHtml(message);
+            chatBubble.innerHTML = htmlMessage;
+
+            // Add an id to the "Generating response..." message so it can be replaced later
+            if (isGenerating) {
+                chatMessage.setAttribute('id', 'generatingMessage');
+            }
+
+            chatMessage.appendChild(chatBubble);
+            chatContent.appendChild(chatMessage);
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+        // Event listener for the predefined question
+        document.getElementById('predefinedQuestion').addEventListener('click', () => {
+            const userInput = document.getElementById('userInput');
+            userInput.value = 'Paris weather reccomendations';
+
+            // Hide the predefined question after it's clicked
+            const predefinedQuestionContainer = document.getElementById('predefinedQuestionContainer');
+            predefinedQuestionContainer.style.display = 'none';
+        });
+
+        // Event listener for the send button
+        document.getElementById('sendButton').addEventListener('click', async () => {
+            const userInput = document.getElementById('userInput').value;
+            if (userInput.trim() === '') return;
+
+            appendChat(userInput, 'user');
+            document.getElementById('userInput').value = '';
+            appendChat('Generating response...', 'bot', true);
+
+            const generatedText = await generateContent(userInput);
+
+            // Remove the "Generating response..." message
+            const generatingMessage = document.getElementById('generatingMessage');
+            if (generatingMessage) {
+                generatingMessage.remove();
+            }
+
+            appendChat(generatedText, 'bot');
+        });
+
+        // Event listener for the chat icon
+        document.getElementById('chatIcon').addEventListener('click', () => {
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.style.display = chatContainer.style.display === 'none' || chatContainer.style.display === '' ? 'block' : 'none';
+        });
+    </script>
+</body>
+
+</html>

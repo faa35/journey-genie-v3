@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Routes</title>
+    <link rel="icon" href="icons/favicon.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.materialdesignicons.com/5.4.55/css/materialdesignicons.min.css" rel="stylesheet">
+        <!-- Material Design Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <style>
+            .card img {
+                height: 200px;
+                object-fit: cover;
+            }
+    
+            .card-body {
+                text-align: center;
+            }
+    
+            .card-body a {
+                text-decoration: none;
+                color: inherit;
+            }
+    
+            @media (max-width: 768px) {
+                .card {
+                    margin-bottom: 20px;
+                }
+            }
+    
+            .material-icons {
+                font-size: 24px;
+                vertical-align: middle;
+                margin-right: 5px;
+            }
+    
+            .navbar-nav {
+                display: flex;
+                justify-content: center;
+                flex-direction: row; /* Ensure items are in a row */
+                flex-wrap: nowrap;
+            }
+    
+            .navbar-nav .nav-link {
+                position: relative;
+                padding-bottom: 5px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+    
+            .navbar-nav .nav-link::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 0;
+                height: 3px;
+                background-color: #000; /* Underline color */
+                transition: width 0.3s;
+            }
+    
+            .navbar-nav .nav-link:hover::after {
+                width: 100%; /* Full width underline on hover */
+            }
+    
+            .navbar-nav .nav-link.active::after {
+                width: 100%;
+                height: 6px; /* Bolder underline for the active page */
+            }
+    
+            /* Hide text on small screens */
+            @media (max-width: 576px) {
+                .navbar-nav .nav-link span.fs-4 {
+                    display: none;
+                }
+                .navbar-nav .nav-link {
+                    padding-left: 5px;
+                    padding-right: 5px;
+                }
+            }
+    
+            /* Styling for the main navbar */
+            .navbar-main {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px;
+                background-color: transparent; /* Make the navbar background transparent */
+            }
+    
+            .navbar-main .brand {
+                font-size: 24px;
+                font-weight: bold;
+            }
+    
+            .navbar-main .logout-btn {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+    
+            .navbar-main .logout-btn:hover {
+                background-color: #c82333;
+            }
+    
+            /* General styles for both navbars on larger screens */
+            @media (min-width: 992px) {
+                /* Main Navbar Styling for Larger Screens */
+                .navbar-main {
+                    padding: 25px 60px;
+                }
+    
+                .navbar-main .brand {
+                    font-size: 32px; /* Larger font size for the brand name */
+                }
+    
+                .navbar-main .logout-btn {
+                    font-size: 20px; /* Larger font size for the log out button */
+                    padding: 12px 30px; /* Larger padding for the log out button */
+                }
+    
+                /* Secondary Navbar Styling for Larger Screens */
+                .navbar.navbar-light.bg-light {
+                    padding: 20px 0; /* Increase padding for the secondary navbar */
+                }
+    
+                .navbar-nav .nav-link {
+                    font-size: 1.25rem; /* fs-4 for larger screens */
+                    padding-bottom: 14px;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                }
+    
+                .navbar-nav .nav-link::after {
+                    height: 5px; /* Increase the underline height on hover and active state */
+                }
+    
+                .navbar-nav .nav-link .material-icons {
+                    font-size: 34px; /* Larger icon size for larger screens */
+                }
+            }
+    
+            /* Set all icon text to fs-4 by default */
+            .navbar-nav .nav-link .fs-4 {
+                font-size: 1.25rem;
+            }
+        .route-card,
+        .add-route-card {
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 20px;
+        }
+
+        .route-card:hover,
+        .add-route-card:hover {
+            transform: scale(1.05);
+        }
+
+        .route-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .route-details h5 {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .route-details .location-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .route-details .location {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            color: #555;
+        }
+
+        .route-details .location i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .route-details .location p {
+            margin: 0;
+            color: #555;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .route-card .edit-button,
+        .route-card .delete-button,
+        .route-card .checklist-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            height: 48px;
+            padding: 0 10px;
+            letter-spacing: .25px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            position: absolute;
+        }
+
+        .route-card .edit-button {
+            top: 10px;
+            right: 60px;
+            color: #007bff;
+        }
+
+        .edit-button:focus {
+            outline: none;
+        }
+
+        .edit-button .mdi {
+            margin-right: 8px;
+        }
+
+        .edit-button>.mdi-pencil-outline {
+            display: block;
+        }
+
+        .edit-button:hover {
+            background-color: #e6f2ff;
+        }
+
+        .edit-button:focus {
+            box-shadow: 0 0 0 4px #cce5ff;
+        }
+
+        .route-card .delete-button {
+            top: 10px;
+            right: 10px;
+            color: red;
+        }
+
+        .delete-button:focus {
+            outline: none;
+        }
+
+        .delete-button .mdi {
+            margin-right: 8px;
+        }
+
+        .delete-button>.mdi-delete-empty {
+            display: none;
+        }
+
+        .delete-button:hover {
+            background-color: #ffcccc;
+        }
+
+        .delete-button:hover>.mdi-delete-empty {
+            display: block;
+        }
+
+        .delete-button:hover>.mdi-delete {
+            display: none;
+        }
+
+        .delete-button:focus {
+            box-shadow: 0 0 0 4px #ff9999;
+        }
+
+        .route-card .checklist-button {
+            bottom: 10px;
+            right: 10px;
+            color: #007bff;
+            font-size: 14px;
+        }
+
+        .checklist-button:focus {
+            outline: none;
+        }
+
+        .checklist-button .mdi {
+            margin-right: 8px;
+        }
+
+        .checklist-button>.mdi-clipboard-check-outline {
+            display: block;
+        }
+
+        .checklist-button:hover {
+            background-color: #e6f2ff;
+        }
+
+        .checklist-button:focus {
+            box-shadow: 0 0 0 4px #cce5ff;
+        }
+
+        .route-details .travel-mode i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        /* Add Route Card */
+        .add-route-card {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .add-route-card .mdi {
+            font-size: 2rem;
+            color: #007bff;
+        }
+
+        .add-route-card span {
+            font-size: 1.2rem;
+            color: #007bff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Navbar -->
+    <header>
+        <nav class="navbar-main">
+            <span class="brand">JourneyGenie</span>
+            <form action="/logout" method="POST">
+                <input type="submit" value="Log out" class="logout-btn">
+            </form>
+        </nav>
+    </header>
+
+    <!-- Secondary Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid justify-content-center">
+            <ul class="navbar-nav">
+                <!-- Home -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/home">
+                        <span class="material-icons">home</span>
+                        <span class="fs-4">Home</span>
+                    </a>
+                </li>
+                <!-- Routes -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/map">
+                        <span class="material-icons">directions</span>
+                        <span class="fs-4">Routes</span>
+                    </a>
+                </li>
+                <!-- Preferences -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/preferences">
+                        <span class="material-icons">settings</span>
+                        <span class="fs-4">Preferences</span>
+                    </a>
+                </li>
+                <!-- Saved Routes -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark active" href="/saved-routes">
+                        <span class="material-icons">bookmark</span>
+                        <span class="fs-4">Saved Routes</span>
+                    </a>
+                </li>
+                <!-- Weather -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/weather">
+                        <span class="material-icons">wb_sunny</span>
+                        <span class="fs-4">Weather</span>
+                    </a>
+                </li>
+                <!-- Track Budget -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/track-budget">
+                        <span class="material-icons">account_balance_wallet</span>
+                        <span class="fs-4">Track Budget</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Container -->
+    <main class="container" style="margin-top: 100px;">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <h1 class="text-center mb-5">Saved Routes</h1>
+
+                <!-- Route Cards -->
+                <div th:each="route : ${routes}" class="route-card"
+                    th:onclick="|window.location.href='@{/route-details/{id}(id=${route.id})}'|">
+                    <!-- Edit Button -->
+                    <a th:href="@{'/edit-route/' + ${route.id}}" class="edit-button">
+                        <span class="mdi mdi-pencil-outline mdi-24px"></span>
+                    </a>
+
+                    <!-- Delete Button -->
+                    <a th:href="@{'/delete-route/' + ${route.id}}" class="delete-button">
+                        <span class="mdi mdi-delete mdi-24px"></span>
+                        <span class="mdi mdi-delete-empty mdi-24px"></span>
+                    </a>
+
+                    <!-- Checklist Button -->
+                    <a th:href="@{'/makeChecklist/checklist/' + ${route.id}}" class="checklist-button">
+                        <span class="mdi mdi-clipboard-check-outline mdi-24px"></span>
+                        <span>Checklist</span>
+                    </a>
+
+                    <!-- Route Details -->
+                    <div class="route-details">
+                        <h5 th:text="${route.formattedCreationDate}">Date Creation</h5>
+                        <div class="location-group">
+                            <div class="location">
+                                <i class="mdi mdi-checkbox-blank-circle-outline"></i>
+                                <p th:text="${#strings.replace(route.startPoint, '%2C', ',')}">Start Point</p>
+                            </div>
+                            <div class="location">
+                                <i class="mdi mdi-map-marker"></i>
+                                <p th:text="${#strings.replace(route.endPoint, '%2C', ',')}">End Point</p>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center travel-mode">
+                            <i th:classappend="'mdi mdi-travel-mode ' +
+                                            (${route.travelMode} == 'driving' ? 'mdi-car' : '') +
+                                            (${route.travelMode} == 'transit' ? 'mdi-train' : '') +
+                                            (${route.travelMode} == 'walking' ? 'mdi-walk' : '') +
+                                            (${route.travelMode} == 'bicycling' ? 'mdi-bike' : '') +
+                                            (${route.travelMode} == 'flying' ? 'mdi-airplane' : '')"></i>
+                            <span>Travel Mode</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Route Card -->
+                <div class="add-route-card" onclick="window.location.href='/map'">
+                    <span class="mdi mdi-plus-circle-outline"></span>
+                    <span>Add </span>
+                </div>
+                <!-- Navigation Buttons -->
+                <div class="d-flex flex-wrap justify-content-between mt-5">
+                    <!-- <a href="/map" class="btn btn-link mt-3">Back to Routes</a> -->
+                    <a href="/track-budget" class="btn btn-warning btn-lg d-flex align-items-center">Track Budget</a>
+                    <a href="/weather" class="btn btn-primary btn-lg d-flex align-items-center">
+                        <span>See Weather</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

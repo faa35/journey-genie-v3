@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="icons/favicon.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Preferences</title>
+        <!-- Material Design Icons -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <style>
+            .card img {
+                height: 200px;
+                object-fit: cover;
+            }
+    
+            .card-body {
+                text-align: center;
+            }
+    
+            .card-body a {
+                text-decoration: none;
+                color: inherit;
+            }
+    
+            @media (max-width: 768px) {
+                .card {
+                    margin-bottom: 20px;
+                }
+            }
+    
+            .material-icons {
+                font-size: 24px;
+                vertical-align: middle;
+                margin-right: 5px;
+            }
+    
+            .navbar-nav {
+                display: flex;
+                justify-content: center;
+                flex-direction: row; /* Ensure items are in a row */
+                flex-wrap: nowrap;
+            }
+    
+            .navbar-nav .nav-link {
+                position: relative;
+                padding-bottom: 5px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+    
+            .navbar-nav .nav-link::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 0;
+                height: 3px;
+                background-color: #000; /* Underline color */
+                transition: width 0.3s;
+            }
+    
+            .navbar-nav .nav-link:hover::after {
+                width: 100%; /* Full width underline on hover */
+            }
+    
+            .navbar-nav .nav-link.active::after {
+                width: 100%;
+                height: 6px; /* Bolder underline for the active page */
+            }
+    
+            /* Hide text on small screens */
+            @media (max-width: 576px) {
+                .navbar-nav .nav-link span.fs-4 {
+                    display: none;
+                }
+                .navbar-nav .nav-link {
+                    padding-left: 5px;
+                    padding-right: 5px;
+                }
+            }
+    
+            /* Styling for the main navbar */
+            .navbar-main {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px;
+                background-color: transparent; /* Make the navbar background transparent */
+            }
+    
+            .navbar-main .brand {
+                font-size: 24px;
+                font-weight: bold;
+            }
+    
+            .navbar-main .logout-btn {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+            }
+    
+            .navbar-main .logout-btn:hover {
+                background-color: #c82333;
+            }
+    
+            /* General styles for both navbars on larger screens */
+            @media (min-width: 992px) {
+                /* Main Navbar Styling for Larger Screens */
+                .navbar-main {
+                    padding: 25px 60px;
+                }
+    
+                .navbar-main .brand {
+                    font-size: 32px; /* Larger font size for the brand name */
+                }
+    
+                .navbar-main .logout-btn {
+                    font-size: 20px; /* Larger font size for the log out button */
+                    padding: 12px 30px; /* Larger padding for the log out button */
+                }
+    
+                /* Secondary Navbar Styling for Larger Screens */
+                .navbar.navbar-light.bg-light {
+                    padding: 20px 0; /* Increase padding for the secondary navbar */
+                }
+    
+                .navbar-nav .nav-link {
+                    font-size: 1.25rem; /* fs-4 for larger screens */
+                    padding-bottom: 14px;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                }
+    
+                .navbar-nav .nav-link::after {
+                    height: 5px; /* Increase the underline height on hover and active state */
+                }
+    
+                .navbar-nav .nav-link .material-icons {
+                    font-size: 34px; /* Larger icon size for larger screens */
+                }
+            }
+    
+            /* Set all icon text to fs-4 by default */
+            .navbar-nav .nav-link .fs-4 {
+                font-size: 1.25rem;
+            }
+            .preferences-container {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa; /* Light grey background */
+        padding: 50px 20px; /* Add some padding to the container */
+        max-width: 600px; /* Limit the width of the form */
+        margin: auto; /* Center the form */
+        border-radius: 10px; /* Round the corners of the container */
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    }
+
+    .preferences-container h1 {
+        font-size: 2.5rem;
+        color: #343a40;
+        margin-bottom: 40px; /* Space below the header */
+        text-align: center;
+    }
+
+    .preferences-container label {
+        font-weight: bold;
+        color: #495057;
+        margin-bottom: 10px; /* Space between labels and inputs */
+    }
+
+    .preferences-container input[type="number"],
+    .preferences-container input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        font-size: 1rem;
+        box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.1); /* Add a subtle inner shadow */
+    }
+
+    .preferences-container input[type="checkbox"] {
+        margin-left: 10px;
+        transform: scale(1.2); /* Make the checkbox slightly larger */
+    }
+
+    .preferences-container .btn {
+        padding: 14px;
+        font-size: 1.2rem;
+        border-radius: 5px;
+        transition: background-color 0.3s ease; /* Smooth transition for button hover */
+    }
+
+    .preferences-container .btn-info {
+        background-color: #17a2b8;
+        border: none;
+    }
+
+    .preferences-container .btn-info:hover {
+        background-color: #138496;
+    }
+
+    .preferences-container .btn-dark {
+        background-color: #343a40;
+        border: none;
+    }
+
+    .preferences-container .btn-dark:hover {
+        background-color: #23272b;
+    }
+
+    .preferences-container .btn-danger {
+        background-color: #dc3545;
+        border: none;
+    }
+
+    .preferences-container .btn-danger:hover {
+        background-color: #bd2130;
+    }
+
+    #interestTable {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    #interestTable td {
+        padding-bottom: 10px;
+    }
+
+    @media (max-width: 576px) {
+        .preferences-container h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .preferences-container .btn {
+            font-size: 1rem;
+            padding: 10px;
+        }
+
+        .preferences-container label {
+            font-size: 1rem;
+        }
+
+        .preferences-container input[type="number"],
+        .preferences-container input[type="text"] {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 991px) {
+        .preferences-container h1 {
+            font-size: 2.2rem;
+        }
+
+        .preferences-container .btn {
+            font-size: 1.1rem;
+        }
+
+        .preferences-container input[type="number"],
+        .preferences-container input[type="text"] {
+            font-size: 1rem;
+        }
+    }
+
+    @media (min-width: 992px) {
+        .preferences-container h1 {
+            font-size: 2.5rem;
+        }
+
+        .preferences-container .btn {
+            font-size: 1.2rem;
+        }
+
+        .preferences-container input[type="number"],
+        .preferences-container input[type="text"] {
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Form alignment on larger screens */
+    @media (min-width: 768px) {
+        .preferences-container form {
+            max-width: 600px;
+            margin: auto;
+        }
+    }
+
+    /* Form alignment on extra small screens */
+    @media (max-width: 575.98px) {
+        .preferences-container #preferences label,
+        .preferences-container #preferences input,
+        .preferences-container #preferences button {
+            width: 100%;
+            text-align: left;
+        }
+    }
+
+    /* Increase the padding of the buttons on mobile screens */
+    @media (max-width: 575.98px) {
+        .preferences-container .btn {
+            padding: 14px;
+        }
+    }
+            
+        </style>
+    <script type="importmap">
+        {
+          "imports": {
+            "@google/generative-ai": "https://esm.run/@google/generative-ai"
+          }
+        }
+    </script>
+    <script type="module" th:if="${hasPreferences}">
+
+        import { GoogleGenerativeAI } from "@google/generative-ai";        
+        
+        const API_KEY = "[[${GOOGLE_API_KEY}]]"; // Add your API key here
+        
+        const genAI = new GoogleGenerativeAI(API_KEY);
+    
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+        async function generateContent(prompt) {
+            try {
+                const result = await model.generateContent(prompt);
+                const response = await result.response;
+                const text = await response.text();
+                return text;
+            } catch (error) {
+                console.error('Error generating content:', error);
+                return 'Failed to generate content';
+            }
+        }
+    
+    
+        document.getElementById('generateTrip').addEventListener('click', async () => {
+            let interests = document.getElementsByClassName("interests");
+            var interestList = interests[0].value;
+
+            if (interests.length == 2) {
+                interestList += " and " + interests[1].value;
+            } else if (interests.length > 2) {
+                for (let i = 1; i < interests.length-1; i++) {
+                    interestList += ", " + interests[i].value;
+                } 
+                interestList += " and " + interests[interests.length-1].value;
+            }
+
+            let input = "Generate a list of activities for a vacation based on the following intructions and display it as an ampersand-separated list of street addresses corresponding to each activity. "
+            + "The output should contain no end-of-lines. Nothing else should be shown. "
+            + "There must be exactly " + document.getElementById("activitiesPerDay").value * document.getElementById("duration").value + " activities. "
+            + "Activities and addresses cannot be repeated. They should be spread accross multiple cities or countries. "
+            + "The output should not start with an ampersand. "
+            + "The activities should be in and around " + document.getElementById("location").value + ". "
+            + "Each activity should be at most " + document.getElementById("range").value + " hours away from the previous activity. "
+            + "The trip should suit someone who is interested in " + interestList;
+
+            console.log(input);
+
+            const outputDiv = document.getElementById('generationStatus');
+            outputDiv.textContent = 'Generating...';
+        
+            let generatedText = await generateContent(input);
+            outputDiv.textContent = generatedText.replaceAll("&","\n");
+            // outputDiv.textContent = generatedText;
+
+            if (!document.getElementById("createRoute")) {
+                const createRoute = document.createElement("div");
+                createRoute.innerHTML = 
+                '<form action="/index/' + generatedText + ' method="GET">'
+                + '<input type="submit" id="createRoute" value="createRoute" class = "btn btn-info text-white w-100 mb-5"></input>'
+                + '</form>'
+                outputDiv.append(createRoute);
+            }
+        });
+    </script>
+    <script>
+
+        function savePreferences() {
+
+            let interests = document.getElementsByClassName("interests");
+            var interestList = interests[0].value;
+
+            for (let i = 1; i < interests.length; i++) {
+                interestList += "," + interests[i].value;
+            }
+
+            fetch('/save-preferences', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'duration': document.getElementById("duration").value,
+                        'activitiesPerDay': document.getElementById("activitiesPerDay").value,
+                        'tolls': document.getElementById("tolls").checked,
+                        'location': document.getElementById("location").value,
+                        'range': document.getElementById("range").value,
+                        'interests': interestList
+                    })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('Preferences saved successfully.');
+                        } else {
+                            alert('Failed to save preferences.');
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+        }
+
+        function addInterest() {
+            let table = document.getElementById("interestTable");
+            let row = document.createElement("tr");
+            row.innerHTML = '<td><input style="width:90%" type="text" name="interests" class="interests" required></td><td><button class="btn btn-danger" onclick="deleteInterest(this)">Delete</button></td>';
+            table.appendChild(row);
+        }
+
+        function deleteInterest(interest) {
+            interest.parentElement.parentElement.remove();
+        }
+    </script>
+</head>
+<body>
+    <!-- Main Navbar -->
+    <header>
+        <nav class="navbar-main">
+            <span class="brand">JourneyGenie</span>
+            <form action="/logout" method="POST">
+                <input type="submit" value="Log out" class="logout-btn">
+            </form>
+        </nav>
+    </header>
+
+    <!-- Secondary Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid justify-content-center">
+            <ul class="navbar-nav">
+                <!-- Home -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/home">
+                        <span class="material-icons">home</span>
+                        <span class="fs-4">Home</span>
+                    </a>
+                </li>
+                <!-- Routes -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/map">
+                        <span class="material-icons">directions</span>
+                        <span class="fs-4">Routes</span>
+                    </a>
+                </li>
+                <!-- Preferences -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark active" href="/preferences">
+                        <span class="material-icons">settings</span>
+                        <span class="fs-4">Preferences</span>
+                    </a>
+                </li>
+                <!-- Saved Routes -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/saved-routes">
+                        <span class="material-icons">bookmark</span>
+                        <span class="fs-4">Saved Routes</span>
+                    </a>
+                </li>
+                <!-- Weather -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/weather">
+                        <span class="material-icons">wb_sunny</span>
+                        <span class="fs-4">Weather</span>
+                    </a>
+                </li>
+                <!-- Track Budget -->
+                <li class="nav-item mx-2">
+                    <a class="nav-link text-dark" href="/track-budget">
+                        <span class="material-icons">account_balance_wallet</span>
+                        <span class="fs-4">Track Budget</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <h1 class="text-center mb-5" style = "margin-top: 100px;">Preferences</h1>
+
+    <main class = "container preferences-container">
+
+        <div style = "margin-top: 100px;">
+                <form th:if="${hasPreferences}" id="preferences" class="row justify-content-sm-center">
+                    <label for="duration">Trip duration</label>
+                    <input type="number" name="duration" id="duration" placeholder="days" th:value="${user.preferences.duration}" class = "mb-4" required>
+                    <label for="activitiesPerDay">Activities per day</label>
+                    <input type="number" name="activitiesPerDay" id="activitiesPerDay" placeholder="# of activities" th:value="${user.preferences.activitiesPerDay}" class = "mb-4" required>
+                    <label for="tolls">Allow tolls roads</label>
+                    <input th:if="${user.preferences.tolls}" type="checkbox" name="tolls" id="tolls" checked>
+                    <input th:unless="${user.preferences.tolls}" type="checkbox" name="tolls" id="tolls">
+                    <label for="location" class = "mt-4">Preferred Location</label>
+                    <input type="text" name="location" id="location" placeholder="country/city" th:value="${user.preferences.location}" class = "mb-4" required>
+                    <label for="range">Max time between Activities</label>
+                    <input type="number" name="range" id="range" placeholder="hours" th:value="${user.preferences.range}" class = "mb-4" required>
+                    <label for="interests" class = "mb-2">Interests</label>
+                    <button onclick="addInterest()" class="btn btn-dark text-white mx-2 mb-2">Add Interest</button>
+                    <table id="interestTable">
+                        <tr th:each="interest:${interests}">
+                            <td><input style="width:90%" type="text" name="interests" class="interests" required th:value="${interest}"></td>
+                            <td><button class="btn btn-danger" onclick="deleteInterest(this)">Delete</button></td>
+                        </tr>
+                    </table>
+                    <button onclick="savePreferences()" class = "btn btn-info text-white w-100 mt-5 mb-4">Save</button>
+                </form>
+                
+                <form th:unless="${hasPreferences}" id="preferences" class="row justify-content-sm-center">
+                    <label for="duration">Trip duration</label>
+                    <input type="number" name="duration" id="duration" placeholder="days" class = "mb-4" required>
+                    <label for="activitiesPerDay">Activities per day</label>
+                    <input type="number" name="activitiesPerDay" id="activitiesPerDay" placeholder="# of activities" class = "mb-4" required>
+                    <label for="tolls">Allow tolls roads</label>
+                    <input type="checkbox" name="tolls" id="tolls">
+                    <label for="location" class = "mt-4">Preferred Location</label>
+                    <input type="text" name="location" id="location" placeholder="country/city" class = "mb-4" required>
+                    <label for="range">Max time between Activities</label>
+                    <input type="number" name="range" id="range" placeholder="hours" class = "mb-4" required>
+                    <label for="interests" class = "mb-2">Interests</label>
+                    <button onclick="addInterest()" class="btn btn-dark text-white mx-2 mb-2">Add Interest</button>
+                    <table id="interestTable">
+                        <tr>
+                            <td><input style="width:90%" type="text" name="interests" class="interests" required></td>
+                            <td><button class="btn btn-danger" onclick="deleteInterest(this)">Delete</button></td>
+                        </tr>
+                    </table>
+                    <button onclick="savePreferences()" class = "btn btn-info text-white w-100 mt-5 mb-4">Save</button>
+                </form>
+                <button th:if="${hasPreferences}" id="generateTrip" class = "btn btn-info text-white w-100 mb-3">Generate trip</button>
+                <div id="generationStatus" style="white-space: pre-line"></div>
+
+        </div>
+    </main>
+    
+</body>
+</html>
